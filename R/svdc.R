@@ -14,7 +14,7 @@
 #' add(a,b)
 
 add <- function(a,b) {
-    if(!all(identical(class(a), "numeric"), identical(class(a), "numeric"))){
+    if(!all(identical(class(a), "numeric"), identical(class(b), "numeric"))){
         stop("Both arguments must be numeric")
     }
     return(a+b)
