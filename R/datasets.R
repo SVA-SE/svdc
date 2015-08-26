@@ -4,6 +4,7 @@
 ##' @docType data
 ##' @import sp
 ##' @keywords datasets
+##' @include svdc.R
 NULL
 
 ##' Administrative (NUTS) units in Sweden (1 : 3 Million)
