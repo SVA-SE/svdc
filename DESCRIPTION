@@ -11,6 +11,8 @@ Description: svdc (svamp data cleaning) is a package that cleans data
 License: Internal SVA code
 Type: Package
 LazyLoad: yes
+Imports:
+  sp
 Depends:
     R(>= 3.0.0)
 Collate:
