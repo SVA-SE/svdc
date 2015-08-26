@@ -27,7 +27,7 @@ data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SV
                          movements_dataset = "C:/svamp/map_report/data/giampaolo/Notforflyttningar.csv"){
  
   # load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
-  data(NUTS_03M)
+  data(NUTS_03M, env)
   data(postnummer)
   #postnummer <- spTransform(postnummer, CRS("+init=epsg:3021"))
   
@@ -121,9 +121,7 @@ data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SV
   i <- postnummer@data$POSTALCODE %in% PPN_is.na_ND$Postnummer
   i2 <- !postnummer@data$POSTALCODE %in% PPN_is.na_ND$Postnummer
   postnum_miss <- postnummer[i,]
-  proj4string(postnum_miss) <- CRS("+init=epsg:3021")
   postnum_not_miss <- postnummer[i2,]
-  proj4string(postnum_not_miss) <- CRS("+init=epsg:3021")
   
   # PPN not duplicated
   farms_RT90 <- subset(PPN_xy, !duplicated(PPN_xy$Ppn))
@@ -159,9 +157,18 @@ data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SV
   
   #Save file
 
-  result <- list(PPN, farms_RT90, PPN_is.na, postnum_miss, postnum_not_miss,
-       ani_move, district_geo_RT90, nuts_label, SVASSS.alarms.data,
-       SVASSS.SJV.alarms.data, SVASSS.CDB.alarms.data, ppnlist)
+  result <- list(PPN = PPN,
+                 farms_RT90 = farms_RT90,
+                 PPN_is.na = PPN_is.na,
+                 postnum_miss = postnum_miss,
+                 postnum_not_miss = postnum_not_miss,
+                 ani_move = ani_move,
+                 district_geo_RT90 = district_geo_RT90,
+                 nuts_label = nuts_label, 
+                 SVASSS.alarms.data = SVASSS.alarms.data,
+                 SVASSS.SJV.alarms.data = SVASSS.SJV.alarms.data,
+                 SVASSS.CDB.alarms.data = SVASSS.CDB.alarms.data,
+                 ppnlist = ppnlist)
   
   return(result)
   
