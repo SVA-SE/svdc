@@ -11,9 +11,5 @@
 The dataset contains administrative units (NUTS) in Sweden in
 European terminology in scale 1 : 3 Million.
 }
-\examples{
-data(NUTS_03M)
-plot(NUTS_03M)
-}
 \keyword{datasets}
 

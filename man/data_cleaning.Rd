@@ -25,7 +25,4 @@ A data cleaning process needed to create data to be used in SVAMP
 \details{
 Data cleaning of data for use with SVAMP
 }
-\examples{
-result <- data_cleaning()
-}
 

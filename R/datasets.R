@@ -17,10 +17,7 @@ NULL
 ##' \url{http://epp.eurostat.ec.europa.eu/portal/page/portal/gisco_Geographical_information_maps/popups/references/administrative_units_statistical_units_1}
 ##' @import sp
 ##' @keywords datasets
-##' @examples
 ##'
-##' data(NUTS_03M)
-##' plot(NUTS_03M)
 ##'
 NULL
 
