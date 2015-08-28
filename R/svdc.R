@@ -19,21 +19,21 @@
 
 #load PPN data from Rapportportalen
 
-data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SVASSS.alarms.data.RData",
-                         ppn_dataset = "C:/svamp/map_report/data/giampaolo/PPN_records.csv",
-                         movements_dataset = "C:/svamp/map_report/data/giampaolo/Notforflyttningar.csv"){
-
-  # load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
-
+data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+                         ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
+                         movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc")){
+  
+#    load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
 #    load(system.file("extdata/NUTS_03M.rda", package = "svdc", mustWork = TRUE))
-    data(NUTS_03M, package = "svdc", envir = environment())
-    data(postnummer, package = "svdc", envir = environment())
+     data(NUTS_03M, package = "svdc", envir = environment())
+     data(postnummer, package = "svdc", envir = environment())
 
   #postnummer <- spTransform(postnummer, CRS("+init=epsg:3021"))
 
   #SVASSS data
   load(file = svasss_dataset)
-
+  
+  
   #URAX data. Those are toy data. As soon as we'll have true urax data change the path
   # urax <- read.csv("C:/project/R/proj/gis/data/URAX/prover.csv", sep=";",
   #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
@@ -60,6 +60,11 @@ data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SV
 
   #load PPN data from Rapportportalen
   PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
+  
+  if(!(length(names(ppn_dataset)) == 43)){
+    stop("The number of columns in the PPN dataset should be 43")
+  }
+  
   PPN <- subset(PPN, PPN$Platsstatuskod == "G" |
                   PPN$Platsstatuskod == "O")
 
@@ -178,5 +183,3 @@ data_cleaning <-function(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SV
   # save(urax, file = "map_report/data/urax.rdata")
 
 }
-
-
