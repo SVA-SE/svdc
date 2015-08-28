@@ -61,8 +61,16 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   #load PPN data from Rapportportalen
   PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
   
-  if(!(length(names(ppn_dataset)) == 43)){
+  if(!(length(names(PPN)) == 43)){
     stop("The number of columns in the PPN dataset should be 43")
+  }
+  
+  ppn_sample_names <- names(read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc")))
+  ppn_names <- names(ppn_dataset)
+  
+  if(!identical(ppn_sample_names, ppn_names)){
+    stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
+
   }
   
   PPN <- subset(PPN, PPN$Platsstatuskod == "G" |
