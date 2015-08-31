@@ -59,18 +59,27 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   SVASSS.SJV.alarms.data<-fix_enc(SVASSS.SJV.alarms.data)
 
   #load PPN data from Rapportportalen
-  PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
+  PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
+  # PPN2 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
   
-  if(!(length(names(PPN)) == 43)){
-    stop("The number of columns in the PPN dataset should be 43")
+  if(!(length(names(PPN)) == 41)){
+    stop("The number of columns in the PPN dataset should be 41")
   }
   
-  ppn_sample_names <- names(read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc")))
-  ppn_names <- names(ppn_dataset)
+  # OBS! X and Y are inverted in the original dataset of JBV
+  if(!colnames(PPN)[5] == "X" | !colnames(PPN)[6] == "Y"){
+    stop("Column name X or Y is changed. Check if JBV fixed the error in X and Y coordinates")
+  }
   
-  if(!identical(ppn_sample_names, ppn_names)){
+  ppn_sample <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors=FALSE)
+  ppn_names <- names(PPN)
+  
+  if(!identical(names(ppn_sample), ppn_names)){
     stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
-
+  }
+  
+  if(!identical(sapply(PPN, "class"), sapply(ppn_sample, "class"))){
+     stop("Columns class has changed")
   }
   
   PPN <- subset(PPN, PPN$Platsstatuskod == "G" |
@@ -89,7 +98,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
                   is.na(PPN$CDB.Antal) &
                   is.na(PPN$Maxkapacitet))] <- NA
 
-  #OBS! X and Y are inverted in the original dataset of JBV
+  
   colnames(PPN)[5] <- "Y"
   colnames(PPN)[6] <- "X"
 
