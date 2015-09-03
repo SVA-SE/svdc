@@ -4,8 +4,10 @@
 \alias{data_cleaning}
 \title{data_cleaning}
 \usage{
-data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
-  ppn_dataset = system.file("extdata/ppn_sample.csv", package = "svdc"),
+
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda",
+  package = "svdc"), ppn_dataset = system.file("extdata/ppn_sample.csv",
+  package = "svdc"),
   movements_dataset = system.file("extdata/ani_move_sample.csv", package =
   "svdc"))
 }

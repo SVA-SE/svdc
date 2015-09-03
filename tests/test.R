@@ -9,7 +9,7 @@ test_ppn1 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset, file = test_ppn1, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  test_ppn1,
                 movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
 )
@@ -30,7 +30,7 @@ test_ppn2 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset2, file = test_ppn2, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  test_ppn2,
                 movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
 )
@@ -50,7 +50,7 @@ test_ppn3 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset3, file = test_ppn3, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  test_ppn3,
                 movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
 )
@@ -69,7 +69,7 @@ test_ppn4 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset4, file = test_ppn4, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  test_ppn4,
                 movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
 )
@@ -89,7 +89,7 @@ test_mov1 <- tempfile(fileext = ".csv")
 write.csv2(movements_dataset, file = test_mov1, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                 movements_dataset = test_mov1)
 )
@@ -108,7 +108,7 @@ test_mov2 <- tempfile(fileext = ".csv")
 write.csv2(movements_dataset2, file = test_mov2, row.names = FALSE)
 
 res <- tools::assertError(
-  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                 ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                 movements_dataset = test_mov2)
 )
