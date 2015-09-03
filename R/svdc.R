@@ -1,24 +1,12 @@
 #' Data cleaning of data for use with SVAMP
 #'
-#' @title data_cleaning
-#'
+#' A data cleaning process needed to create data to be used in SVAMP
 #' @param svasss_dataset path of dataset of svass report
 #' @param ppn_dataset Path of dataset of farm ppns
 #' @param movements_dataset path of animal movement dataset
-#'
 #' @return A compound list of datasets
-#'
-#' @description A data cleaning process needed to create data to be used in SVAMP
-#'
 #' @export
-#'
-#' @import
-#' sp
-#'
-
-
-#load PPN data from Rapportportalen
-
+#' @import sp
 data_cleaning <-function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                          ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                          movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc")){
