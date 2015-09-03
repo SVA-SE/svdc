@@ -1,3 +1,16 @@
+#' Check filename argument
+#'
+#' Check the filename and return normalized path.
+#' @param filename The filename to check
+#' @return character vector with normalized path
+#' @keywords internal
+check_file_argument <- function(filename)
+{
+    stopifnot(all(is.character(filename),
+                  identical(length(filename), 1L)))
+    normalizePath(filename, mustWork = TRUE)
+}
+
 #' Data cleaning of data for use with SVAMP
 #'
 #' A data cleaning process needed to create data to be used in SVAMP
@@ -7,9 +20,14 @@
 #' @return A compound list of datasets
 #' @export
 #' @import sp
-data_cleaning <-function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
-                         ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
-                         movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc")){
+data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
+                          ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
+                          movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
+{
+  # Check arguments
+  svasss_dataset <- check_file_argument(svasss_dataset)
+  ppn_dataset <- check_file_argument(ppn_dataset)
+  movements_dataset <- check_file_argument(movements_dataset)
 
 #    load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
 #    load(system.file("extdata/NUTS_03M.rda", package = "svdc", mustWork = TRUE))
