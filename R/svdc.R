@@ -11,6 +11,121 @@ check_file_argument <- function(filename)
     normalizePath(filename, mustWork = TRUE)
 }
 
+#' Load ppn data
+#'
+#' Load and prepare ppn data.
+#' @param filename The filename to the dataset
+#' @return A data.frame
+load_ppn_data <- function(filename)
+{
+    PPN <- read.csv(file = filename, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
+    if(!(length(names(PPN)) == 41)){
+        stop("The number of columns in the PPN dataset should be 41")
+    }
+
+    ## OBS! X and Y are inverted in the original dataset of JBV
+    if(!colnames(PPN)[5] == "X" | !colnames(PPN)[6] == "Y"){
+        stop("Column name X or Y is changed. Check if JBV fixed the error in X and Y coordinates")
+    }
+    colnames(PPN)[5] <- "Y"
+    colnames(PPN)[6] <- "X"
+
+    ## Load sample data to compare column names. We expect the column
+    ## names in the sample data and real data to be identical. NOTE: that
+    ## this check fails if the data structure change.
+    ppn_sample <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"),
+                            stringsAsFactors=FALSE)
+    if(!identical(names(ppn_sample), names(PPN))) {
+        stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
+    }
+
+    ## Also check that the type of each column is identical to the sample
+    ## data.
+    if(!identical(sapply(PPN, "class"), sapply(ppn_sample, "class"))){
+        stop("Columns class has changed")
+    }
+
+    ## Exclude PPN with status 'Upphört'
+    PPN <- subset(PPN, PPN$Platsstatuskod == "G" | PPN$Platsstatuskod == "O")
+
+    ## Add column to sum total number of animals per each PPN
+    PPN$tot_anim <- rowSums(PPN[, c("Antal",
+                                    "Antalslaktplatser",
+                                    "Antalsuggplatser",
+                                    "CDB.Antal",
+                                    "Maxkapacitet")], na.rm = TRUE)
+
+    ## The total number of animals can be identical to zero for two
+    ## reasons:
+    ##  1) All numbers for one PPN equal to NA
+    ##  2) At least one number specified to 0
+    ## We want to make sure the 1) case is NA
+    i <- which(is.na(PPN$Antal) &
+               is.na(PPN$Antalslaktplatser) &
+               is.na(PPN$Antalsuggplatser) &
+               is.na(PPN$CDB.Antal) &
+               is.na(PPN$Maxkapacitet))
+    if (length(i))
+        PPN$tot_anim[i] <- NA
+
+    ## create a new column to list the species present in each PPN
+    z <- PPN[c("Ppn", "Typ")]
+    z1 <- split(z$Typ, z$Ppn)
+    a <- unlist(lapply(z1, function(x){
+        paste(unique(x), collapse = ", ")
+    }))
+
+    final <- data.frame("Ppn" = labels(a),
+                        "Species" = a,
+                        stringsAsFactors = FALSE)
+
+    final$Ppn <- as.integer(final$Ppn)
+
+    PPN<-cbind(PPN,
+               "Species" = final$Species[match(PPN$Ppn, final$Ppn)],
+               stringsAsFactors=FALSE)
+
+    PPN$Species[PPN$Species == ""] <- "Unknown"
+
+    return(PPN)
+}
+
+#' Load movement data
+#'
+#' Load and prepare movement data.
+#' @param filename The filename to the dataset
+#' @return A \code{data.frame}
+load_movement_data <- function(filename)
+{
+    ## Import movement dataset and format according to EpiContactTrace
+    ## (Thomas Rosendal code)
+    ani_move <- read.csv2(movements_dataset, as.is=TRUE)
+    ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"),
+                                 stringsAsFactors=FALSE)
+
+    if(!identical(names(ani_move_sample), names(ani_move))) {
+        stop("The columns names in the movements dataset do not match the ordinary movements columns names")
+    }
+
+    if(!identical(sapply(movements_dataset, "class"), sapply(ani_move_sample, "class"))) {
+        stop("Columns class of movements dataset has changed")
+    }
+
+    file.info("ani_move")
+    ani_move <- ani_move[,c(5,6,8,7)]
+    names(ani_move) <- c('source', 'destination', 'Type', 't')
+    ani_move$t <- as.Date(ani_move$t)
+    ani_move2 <- subset(ani_move, subset=Type==2|Type==4)
+    ani_move3 <- subset(ani_move, subset=Type==1|Type==5)
+    ani_move4 <- ani_move3
+    ani_move4$source <- ani_move3$destination
+    ani_move4$destination <- ani_move3$source
+    ani_move <- rbind(ani_move2, ani_move4)
+    ani_move <- subset(ani_move, select=-Type)
+
+    return(ani_move)
+}
+
 #' Data cleaning of data for use with SVAMP
 #'
 #' A data cleaning process needed to create data to be used in SVAMP
