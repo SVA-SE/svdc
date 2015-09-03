@@ -25,20 +25,20 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   
 #    load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
 #    load(system.file("extdata/NUTS_03M.rda", package = "svdc", mustWork = TRUE))
-     data(NUTS_03M, package = "svdc", envir = environment())
-     data(postnummer, package = "svdc", envir = environment())
+  data(NUTS_03M, package = "svdc", envir = environment())
+  data(postnummer, package = "svdc", envir = environment())
 
   #postnummer <- spTransform(postnummer, CRS("+init=epsg:3021"))
 
   #SVASSS data
   load(file = svasss_dataset)
   
-  
   #URAX data. Those are toy data. As soon as we'll have true urax data change the path
   # urax <- read.csv("C:/project/R/proj/gis/data/URAX/prover.csv", sep=";",
   #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
 
   #Function to encode factors and characters
+  
   fix_enc<-function(df){
     for(x in 1:ncol(df)){
       if(identical(is.factor(df[,x]),TRUE)) {
@@ -54,13 +54,14 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   }
 
   #Encoding of SVASSS data
-  SVASSS.alarms.data<-fix_enc(SVASSS.alarms.data)
-  SVASSS.CDB.alarms.data<-fix_enc(SVASSS.CDB.alarms.data)
-  SVASSS.SJV.alarms.data<-fix_enc(SVASSS.SJV.alarms.data)
+  SVASSS.alarms.data <- fix_enc(SVASSS.alarms.data)
+  SVASSS.CDB.alarms.data <- fix_enc(SVASSS.CDB.alarms.data)
+  SVASSS.SJV.alarms.data <- fix_enc(SVASSS.SJV.alarms.data)
 
   #load PPN data from Rapportportalen
   PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
-  # PPN2 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
+  # PPN2 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",")
+  # PPN3 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
   
   if(!(length(names(PPN)) == 41)){
     stop("The number of columns in the PPN dataset should be 41")
@@ -85,7 +86,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   PPN <- subset(PPN, PPN$Platsstatuskod == "G" |
                   PPN$Platsstatuskod == "O")
 
-  #Add column to sum total number of animals per each PPN
+  # Add column to sum total number of animals per each PPN
   PPN$tot_anim <- apply(PPN[c("Antal",
                               "Antalslaktplatser",
                               "Antalsuggplatser",
@@ -103,24 +104,39 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   colnames(PPN)[6] <- "X"
 
   #create a new column to list the species present in each PPN
-  z<-PPN[c("Ppn","Typ")]
-  z1<- split(z$Typ, z$Ppn)
-  a<-unlist(lapply(z1,function(x){
-    paste(unique(x), collapse=", ")
+  z <- PPN[c("Ppn", "Typ")]
+  z1 <- split(z$Typ, z$Ppn)
+  a <- unlist(lapply(z1, function(x){
+                          paste(unique(x), collapse = ", ")
   }))
 
-  final<-data.frame("Ppn"=labels(a), "Species"=a, stringsAsFactors=FALSE)
+  final <- data.frame("Ppn" = labels(a), 
+                      "Species" = a, 
+                      stringsAsFactors = FALSE)
+  
   final$Ppn <- as.integer(final$Ppn)
 
   PPN<-cbind(PPN,
-             'Species'=final$Species[match(PPN$Ppn, final$Ppn)],
+             "Species" = final$Species[match(PPN$Ppn, final$Ppn)],
              stringsAsFactors=FALSE)
 
-  PPN$Species[PPN$Species==""]<-"Unknown"
+  PPN$Species[PPN$Species == ""] <- "Unknown"
 
 
   # Import movement dataset and format according to EpiContactTrace (Thomas Rosendal code)
-  ani_move <- read.csv2(movements_dataset, as.is=TRUE, encoding='UTF-8')
+  ani_move <- read.csv2(movements_dataset, as.is=TRUE)
+# ani_move <- read.csv2("C:/svamp/map_report/data/giampaolo/Notforflyttningar.csv", as.is=TRUE)
+  ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"), stringsAsFactors=FALSE)
+  ani_move_names <- names(ani_move)
+  
+  if(!identical(names(ani_move_sample), ani_move_names)){
+    stop("The columns names in the movements dataset do not match the ordinary movements columns names")
+  }
+
+  if(!identical(sapply(movements_dataset, "class"), sapply(ani_move_sample, "class"))){
+  stop("Columns class of movements dataset has changed")
+  }
+  
   file.info("ani_move")
   ani_move <- ani_move[,c(5,6,8,7)]
   names(ani_move) <- c('source', 'destination', 'Type', 't')
@@ -151,12 +167,12 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   proj4string(farms_RT90) <- CRS("+init=epsg:3021")
 
   #movement dataset last 100 days
-  ani_move <- ani_move[ani_move$t>Sys.Date() - 100,]
+  ani_move <- ani_move[ani_move$t > Sys.Date() - 100,]
 
   #Veterinary disctrict dataset
   data(district_geo_RT90, package = "svdc", envir = environment())
-  Encoding(names(district_geo_RT90@data))<-"latin1"
-  names(district_geo_RT90@data)<-enc2utf8(names(district_geo_RT90@data))
+  Encoding(names(district_geo_RT90@data)) <- "latin1"
+  names(district_geo_RT90@data) <- enc2utf8(names(district_geo_RT90@data))
   district_geo_RT90@data$Lan <- as.character(district_geo_RT90@data$Lan)
   district_geo_RT90@data$Distriktsveterinar <- as.character(district_geo_RT90@data$Distriktsveterinar)
   district_geo_RT90@data$Adress <- as.character(district_geo_RT90@data$Adress)
@@ -174,7 +190,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   data(nuts_label, package = "svdc", envir = environment())
 
   #List of PPN, X and Y not duplicated
-  ppnlist<-PPN[c("Ppn","X","Y","Kommun", "Adress", "Postnummer", "Postadress")]
+  ppnlist <- PPN[c("Ppn","X","Y","Kommun", "Adress", "Postnummer", "Postadress")]
   ppnlist <- ppnlist[!duplicated(ppnlist$Ppn),]
 
   #Save file

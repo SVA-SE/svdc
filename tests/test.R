@@ -63,7 +63,7 @@ stopifnot(length(grep("The columns names in the PPN dataset do not match the ord
 rm(list = ls())
 
 ppn_sample_dataset <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
-ppn_sample_dataset$Postnummer<- as.integer(ppn_sample_dataset$Postnummer)
+ppn_sample_dataset$Postnummer <- as.integer(ppn_sample_dataset$Postnummer)
 ppn_dataset4 <- ppn_sample_dataset
 test_ppn4 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset4, file = test_ppn4, row.names = FALSE)
@@ -77,3 +77,41 @@ res <- tools::assertError(
 stopifnot(length(grep("Columns class has changed",
                       res[[1]]$message)) > 0)
 
+
+#test5
+
+rm(list = ls())
+
+movements_sample_dataset = read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
+movements_dataset <- movements_sample_dataset
+names(movements_dataset)[1] <- "foo"
+test_mov1 <- tempfile(fileext = ".csv")
+write.csv2(movements_dataset, file = test_mov1, row.names = FALSE)
+
+res <- tools::assertError(
+  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+                ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
+                movements_dataset = test_mov1)
+)
+
+stopifnot(length(grep("The columns names in the movements dataset do not match the ordinary movements columns names",
+                      res[[1]]$message)) > 0)
+
+#test 6
+
+rm(list = ls())
+
+movements_sample_dataset = read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
+movements_sample_dataset$Ppn <- as.character(movements_sample_dataset$Ppn)
+movements_dataset2 <- movements_sample_dataset
+test_mov2 <- tempfile(fileext = ".csv")
+write.csv2(movements_dataset2, file = test_mov2, row.names = FALSE)
+
+res <- tools::assertError(
+  data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+                ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
+                movements_dataset = test_mov2)
+)
+
+stopifnot(length(grep("Columns class of movements dataset has changed",
+                      res[[1]]$message)) > 0)
