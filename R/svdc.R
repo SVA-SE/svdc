@@ -22,7 +22,7 @@
 data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
                          ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                          movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc")){
-  
+
 #    load boundary data of Sweden from SVAR package: OBS data have been already converted from ETRS89 to RT90
 #    load(system.file("extdata/NUTS_03M.rda", package = "svdc", mustWork = TRUE))
   data(NUTS_03M, package = "svdc", envir = environment())
@@ -32,26 +32,10 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
 
   #SVASSS data
   load(file = svasss_dataset)
-  
+
   #URAX data. Those are toy data. As soon as we'll have true urax data change the path
   # urax <- read.csv("C:/project/R/proj/gis/data/URAX/prover.csv", sep=";",
   #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
-
-  #Function to encode factors and characters
-  
-  fix_enc<-function(df){
-    for(x in 1:ncol(df)){
-      if(identical(is.factor(df[,x]),TRUE)) {
-        Encoding(levels(df[,x]))<-"latin1"
-        df[,x]<-enc2utf8(levels(df[,x]))
-      }
-      if(identical(is.character(df[,x]),TRUE)) {
-        Encoding(df[,x])<-"latin1"
-        df[,x]<-enc2utf8(df[,x])
-      }
-    }
-    return(df)
-  }
 
   #Encoding of SVASSS data
   SVASSS.alarms.data <- fix_enc(SVASSS.alarms.data)
@@ -62,27 +46,27 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   PPN <- read.csv(file = ppn_dataset, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
   # PPN2 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",")
   # PPN3 <- read.csv(file="//UBUNTU1/share/PPN_records.csv", sep=";", header=T, stringsAsFactors = FALSE, dec=",", encoding='UTF-8')
-  
+
   if(!(length(names(PPN)) == 41)){
     stop("The number of columns in the PPN dataset should be 41")
   }
-  
+
   # OBS! X and Y are inverted in the original dataset of JBV
   if(!colnames(PPN)[5] == "X" | !colnames(PPN)[6] == "Y"){
     stop("Column name X or Y is changed. Check if JBV fixed the error in X and Y coordinates")
   }
-  
+
   ppn_sample <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors=FALSE)
   ppn_names <- names(PPN)
-  
+
   if(!identical(names(ppn_sample), ppn_names)){
     stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
   }
-  
+
   if(!identical(sapply(PPN, "class"), sapply(ppn_sample, "class"))){
      stop("Columns class has changed")
   }
-  
+
   PPN <- subset(PPN, PPN$Platsstatuskod == "G" |
                   PPN$Platsstatuskod == "O")
 
@@ -99,7 +83,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
                   is.na(PPN$CDB.Antal) &
                   is.na(PPN$Maxkapacitet))] <- NA
 
-  
+
   colnames(PPN)[5] <- "Y"
   colnames(PPN)[6] <- "X"
 
@@ -110,10 +94,10 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
                           paste(unique(x), collapse = ", ")
   }))
 
-  final <- data.frame("Ppn" = labels(a), 
-                      "Species" = a, 
+  final <- data.frame("Ppn" = labels(a),
+                      "Species" = a,
                       stringsAsFactors = FALSE)
-  
+
   final$Ppn <- as.integer(final$Ppn)
 
   PPN<-cbind(PPN,
@@ -128,7 +112,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
 # ani_move <- read.csv2("C:/svamp/map_report/data/giampaolo/Notforflyttningar.csv", as.is=TRUE)
   ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"), stringsAsFactors=FALSE)
   ani_move_names <- names(ani_move)
-  
+
   if(!identical(names(ani_move_sample), ani_move_names)){
     stop("The columns names in the movements dataset do not match the ordinary movements columns names")
   }
@@ -136,7 +120,7 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
   if(!identical(sapply(movements_dataset, "class"), sapply(ani_move_sample, "class"))){
   stop("Columns class of movements dataset has changed")
   }
-  
+
   file.info("ani_move")
   ani_move <- ani_move[,c(5,6,8,7)]
   names(ani_move) <- c('source', 'destination', 'Type', 't')
@@ -202,12 +186,12 @@ data_cleaning <-function(svasss_dataset = "data/SVASSS.alarms.data_sample.RData"
                  postnum_not_miss = postnum_not_miss,
                  ani_move = ani_move,
                  district_geo_RT90 = district_geo_RT90,
-                 nuts_label = nuts_label, 
+                 nuts_label = nuts_label,
                  SVASSS.alarms.data = SVASSS.alarms.data,
                  SVASSS.SJV.alarms.data = SVASSS.SJV.alarms.data,
                  SVASSS.CDB.alarms.data = SVASSS.CDB.alarms.data,
                  ppnlist = ppnlist)
-  
+
   return(result)
 
   # Save function for urax's toy data.

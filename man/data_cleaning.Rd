@@ -4,10 +4,10 @@
 \alias{data_cleaning}
 \title{data_cleaning}
 \usage{
-
-  data_cleaning(svasss_dataset = "C:/svamp/map_report/data/giampaolo/SVASSS.alarms.data.RData",
-  ppn_dataset = "C:/svamp/map_report/data/giampaolo/PPN_records.csv",
-  movements_dataset = "C:/svamp/map_report/data/giampaolo/Notforflyttningar.csv")
+data_cleaning(svasss_dataset = "data/SVASSS.alarms.data_sample.RData",
+  ppn_dataset = system.file("extdata/ppn_sample.csv", package = "svdc"),
+  movements_dataset = system.file("extdata/ani_move_sample.csv", package =
+  "svdc"))
 }
 \arguments{
 \item{svasss_dataset}{path of dataset of svass report}
