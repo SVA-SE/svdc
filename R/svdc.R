@@ -27,9 +27,7 @@ load_ppn_data <- function(filename)
     if(!colnames(PPN)[5] == "X" | !colnames(PPN)[6] == "Y"){
         stop("Column name X or Y is changed. Check if JBV fixed the error in X and Y coordinates")
     }
-    colnames(PPN)[5] <- "Y"
-    colnames(PPN)[6] <- "X"
-
+    
     ## Load sample data to compare column names. We expect the column
     ## names in the sample data and real data to be identical. NOTE: that
     ## this check fails if the data structure change.
@@ -44,8 +42,11 @@ load_ppn_data <- function(filename)
     if(!identical(sapply(PPN, "class"), sapply(ppn_sample, "class"))){
         stop("Columns class has changed")
     }
-
-    ## Exclude PPN with status 'Upphört'
+    
+    colnames(PPN)[5] <- "Y"
+    colnames(PPN)[6] <- "X"
+    
+    ## Exclude PPN with status 'Upph?rt'
     PPN <- subset(PPN, PPN$Platsstatuskod == "G" | PPN$Platsstatuskod == "O")
 
     ## Add column to sum total number of animals per each PPN
@@ -107,7 +108,7 @@ load_movement_data <- function(filename)
         stop("The columns names in the movements dataset do not match the ordinary movements columns names")
     }
 
-    if(!identical(sapply(movements_dataset, "class"), sapply(ani_move_sample, "class"))) {
+    if(!identical(sapply(ani_move, "class"), sapply(ani_move_sample, "class"))) {
         stop("Columns class of movements dataset has changed")
     }
 
@@ -226,7 +227,6 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
 
   # Save function for urax's toy data.
   # As soon as you'll have acces to real data save the object in ppn.rdata
-
   # save(urax, file = "map_report/data/urax.rdata")
 
 }

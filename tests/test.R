@@ -43,7 +43,6 @@ stopifnot(length(grep("Column name X or Y is changed. Check if JBV fixed the err
 rm(list = ls())
 
 ppn_sample_dataset <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
-ppn_sample_dataset$Postnummer<- as.character(ppn_sample_dataset$Postnummer)
 ppn_dataset3 <- ppn_sample_dataset
 names(ppn_dataset3)[1] <- "foo"
 test_ppn3 <- tempfile(fileext = ".csv")
@@ -63,8 +62,8 @@ stopifnot(length(grep("The columns names in the PPN dataset do not match the ord
 rm(list = ls())
 
 ppn_sample_dataset <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
-ppn_sample_dataset$Postnummer <- as.integer(ppn_sample_dataset$Postnummer)
 ppn_dataset4 <- ppn_sample_dataset
+ppn_dataset4$Postnummer <- as.character(ppn_dataset4$Postnummer)
 test_ppn4 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset4, file = test_ppn4, row.names = FALSE)
 
