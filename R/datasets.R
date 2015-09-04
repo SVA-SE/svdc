@@ -24,12 +24,47 @@ NULL
 
 ##' Veterinary districts spatial point dataframe
 ##'
-##' The dataset contains point locations head offices of the veterinary districts in Sweden
+##' The dataset contains point locations head offices of the
+##' veterinary districts in Sweden
 ##'
 ##' @name district_geo_RT90
 ##' @docType data
 ##' @source
 ##' Swedish veterinary districts webpage
+##' @format A spatial point data frame with 81 observations on the following 8 variables.
+##' \describe{
+##'   \item{\code{Lan}}{
+##'     The county where the location lies. (\code{character})
+##'   }
+##'
+##'   \item{\code{Distriktsveterinar}}{
+##'     The name of the district. (\code{character})
+##'   }
+##'
+##'   \item{\code{Adress}}{
+##'     The adress of the district. (\code{character})
+##'   }
+##'
+##'   \item{\code{Kommun}}{
+##'     The kommun of the district. (\code{character})
+##'   }
+##'
+##'   \item{\code{Telefon}}{
+##'     The phone number to the district. (\code{character})
+##'   }
+##'
+##'   \item{\code{Website}}{
+##'     The url to the homepage of the district. (\code{character})
+##'   }
+##'
+##'   \item{\code{X}}{
+##'     The x coordinate in RT90 of the district. (\code{integer})
+##'   }
+##'
+##'   \item{\code{Y}}{
+##'     The y coordinate in RT90 of the district. (\code{integer})
+##'   }
+##' }
 NULL
 
 ##' The name of the counties in Sweden (Län)
