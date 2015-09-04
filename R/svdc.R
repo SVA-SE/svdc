@@ -16,6 +16,7 @@ check_file_argument <- function(filename)
 #' Load and prepare ppn data.
 #' @param filename The filename to the dataset
 #' @return A data.frame
+#' @keywords internal
 load_ppn_data <- function(filename)
 {
     PPN <- read.csv(file = filename, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
@@ -96,6 +97,7 @@ load_ppn_data <- function(filename)
 #' Load and prepare movement data.
 #' @param filename The filename to the dataset
 #' @return A \code{data.frame}
+#' @keywords internal
 load_movement_data <- function(filename)
 {
     ## Import movement dataset and format according to EpiContactTrace
