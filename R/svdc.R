@@ -116,14 +116,18 @@ load_movement_data <- function(filename)
     file.info("ani_move")
     ani_move <- ani_move[,c(5,6,8,7)]
     names(ani_move) <- c('source', 'destination', 'Type', 't')
+
+    ## We are only interested in movement dataset last 100 days
     ani_move$t <- as.Date(ani_move$t)
-    ani_move2 <- subset(ani_move, subset=Type==2|Type==4)
-    ani_move3 <- subset(ani_move, subset=Type==1|Type==5)
+    ani_move <- ani_move[ani_move$t > Sys.Date() - 100,]
+
+    ani_move2 <- subset(ani_move, subset = Type == 2 | Type == 4)
+    ani_move3 <- subset(ani_move, subset = Type == 1 | Type == 5)
     ani_move4 <- ani_move3
     ani_move4$source <- ani_move3$destination
     ani_move4$destination <- ani_move3$source
     ani_move <- rbind(ani_move2, ani_move4)
-    ani_move <- subset(ani_move, select=-Type)
+    ani_move <- subset(ani_move, select = -Type)
 
     return(ani_move)
 }
@@ -182,25 +186,8 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   coordinates(farms_RT90) <- c("X","Y")
   proj4string(farms_RT90) <- CRS("+init=epsg:3021")
 
-  #movement dataset last 100 days
-  ani_move <- ani_move[ani_move$t > Sys.Date() - 100,]
-
-  #Veterinary disctrict dataset
+  ## Veterinary disctrict dataset
   data(district_geo_RT90, package = "svdc", envir = environment())
-  Encoding(names(district_geo_RT90@data)) <- "latin1"
-  names(district_geo_RT90@data) <- enc2utf8(names(district_geo_RT90@data))
-  district_geo_RT90@data$Lan <- as.character(district_geo_RT90@data$Lan)
-  district_geo_RT90@data$Distriktsveterinar <- as.character(district_geo_RT90@data$Distriktsveterinar)
-  district_geo_RT90@data$Adress <- as.character(district_geo_RT90@data$Adress)
-  district_geo_RT90@data$Kommun <- as.character(district_geo_RT90@data$Kommun)
-  Encoding(district_geo_RT90@data$Lan) <- "latin1"
-  Encoding(district_geo_RT90@data$Distriktsveterinar) <- "latin1"
-  Encoding(district_geo_RT90@data$Adress) <- "latin1"
-  Encoding(district_geo_RT90@data$Kommun) <- "latin1"
-  district_geo_RT90@data$Lan <- enc2utf8(district_geo_RT90@data$Lan)
-  district_geo_RT90@data$Distriktsveterinar <- enc2utf8(district_geo_RT90@data$Distriktsveterinar)
-  district_geo_RT90@data$Adress <- enc2utf8(district_geo_RT90@data$Adress)
-  district_geo_RT90@data$Kommun <- enc2utf8(district_geo_RT90@data$Kommun)
 
   #Labels for Län of static outbreak map
   data(nuts_label, package = "svdc", envir = environment())
