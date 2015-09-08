@@ -63,7 +63,7 @@ rm(list = ls())
 
 ppn_sample_dataset <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
 ppn_dataset4 <- ppn_sample_dataset
-ppn_dataset4$Postnummer <- as.character(ppn_dataset4$Postnummer)
+ppn_dataset4$Ppn[1] <- "B2029" # introduced to make the write.csv2 to change class
 test_ppn4 <- tempfile(fileext = ".csv")
 write.csv2(ppn_dataset4, file = test_ppn4, row.names = FALSE)
 
@@ -101,8 +101,8 @@ stopifnot(length(grep("The columns names in the movements dataset do not match t
 rm(list = ls())
 
 movements_sample_dataset = read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"), stringsAsFactors = FALSE)
-movements_sample_dataset$Ppn <- as.character(movements_sample_dataset$Ppn)
 movements_dataset2 <- movements_sample_dataset
+movements_dataset2$Ppn[1] <- "B2029" # introduced to make the write.csv2 to change class
 test_mov2 <- tempfile(fileext = ".csv")
 write.csv2(movements_dataset2, file = test_mov2, row.names = FALSE)
 
