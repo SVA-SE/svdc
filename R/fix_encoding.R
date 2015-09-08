@@ -5,17 +5,17 @@
 ##' @author Thomas Rosendal
 
 
-fix_enc<-function(df){
+fix_enc <- function(df) {
 
-    if(class(df) != "data.frame"){
+    if(class(df) != "data.frame") {
         stop("input must be a dataframe")
     }
 
-    if(ncol(df)<1){
+    if(ncol(df) < 1){
         stop("dataframe has no columns")
     }
 
-    for(x in 1:ncol(df)){
+    for(x in seq_len(ncol(df))){
       if(identical(is.factor(df[,x]),TRUE)) {
         Encoding(levels(df[,x])) <- "latin1"
         df[,x] <- enc2utf8(levels(df[,x]))
