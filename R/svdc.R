@@ -102,7 +102,7 @@ load_movement_data <- function(filename)
 {
     ## Import movement dataset and format according to EpiContactTrace
     ## (Thomas Rosendal code)
-    ani_move <- read.csv2(movements_dataset, as.is=TRUE)
+    ani_move <- read.csv2(filename, as.is=TRUE)
     ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"),
                                  stringsAsFactors=FALSE)
 
@@ -163,6 +163,7 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
 
   # Encoding of SVASSS data
+  source("R/fix_encoding.R")
   SVASSS.alarms.data <- fix_enc(SVASSS.alarms.data)
   SVASSS.CDB.alarms.data <- fix_enc(SVASSS.CDB.alarms.data)
   SVASSS.SJV.alarms.data <- fix_enc(SVASSS.SJV.alarms.data)
