@@ -16,13 +16,13 @@ fix_enc <- function(df) {
     }
 
     for(x in seq_len(ncol(df))){
-      if(identical(is.factor(df[,x]),TRUE)) {
-        Encoding(levels(df[,x])) <- "latin1"
-        df[,x] <- enc2utf8(levels(df[,x]))
+      if(identical(is.factor(df[, x]), TRUE)) {
+        Encoding(levels(df[, x])) <- "latin1"
+        df[, x] <- enc2utf8(levels(df[, x]))
       }
-      if(identical(is.character(df[,x]),TRUE)) {
+      if(identical(is.character(df[,x]), TRUE)) {
         Encoding(df[,x]) <- "latin1"
-        df[,x] <- enc2utf8(df[,x])
+        df[, x] <- enc2utf8(df[, x])
       }
     }
     return(df)
