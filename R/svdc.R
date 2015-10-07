@@ -142,6 +142,7 @@ load_movement_data <- function(filename)
 #' @return A compound list of datasets
 #' @export
 #' @import sp
+#' @import rgdal
 data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                           ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                           movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
@@ -182,7 +183,10 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   i2 <- !postnummer@data$POSTALCODE %in% PPN_is.na_ND$Postnummer
   postnum_miss <- postnummer[i,]
   postnum_not_miss <- postnummer[i2,]
-
+  postnum_miss <- spTransform(postnum_miss, CRS("+init=epsg:3021"))
+  postnum_not_miss <-spTransform(postnum_not_miss, CRS("+init=epsg:3021"))
+  
+  
   # PPN not duplicated
   farms_RT90 <- subset(PPN_xy, !duplicated(PPN_xy$Ppn))
   coordinates(farms_RT90) <- c("X","Y")
@@ -214,9 +218,7 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
                  ppnlist = ppnlist)
 
   return(result)
-
-  # Save function for urax's toy data.
-  # As soon as you'll have acces to real data save the object in ppn.rdata
-  # save(urax, file = "map_report/data/urax.rdata")
-
 }
+
+result <- data_cleaning()
+save(result, file = "C:/svamp/svamp/inst/extdata/result.rda")
