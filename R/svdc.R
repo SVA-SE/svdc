@@ -141,6 +141,7 @@ load_movement_data <- function(filename)
 #' @param movements_dataset path of animal movement dataset
 #' @return A compound list of datasets
 #' @export
+#' @include fix_encoding.R
 #' @import sp
 #' @import rgdal
 data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
@@ -164,7 +165,6 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
 
   # Encoding of SVASSS data
-  source("R/fix_encoding.R")
   SVASSS.alarms.data <- fix_enc(SVASSS.alarms.data)
   SVASSS.CDB.alarms.data <- fix_enc(SVASSS.CDB.alarms.data)
   SVASSS.SJV.alarms.data <- fix_enc(SVASSS.SJV.alarms.data)
