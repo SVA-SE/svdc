@@ -220,5 +220,5 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   return(result)
 }
 
-result <- data_cleaning()
-save(result, file = "C:/svamp/svamp/inst/extdata/result.rda")
+# result <- data_cleaning()
+# save(result, file = "C:/svamp/svamp/inst/extdata/result.rda")

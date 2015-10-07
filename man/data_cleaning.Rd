@@ -2,7 +2,7 @@
 % Please edit documentation in R/svdc.R
 \name{data_cleaning}
 \alias{data_cleaning}
-\title{data_cleaning}
+\title{Data cleaning of data for use with SVAMP}
 \usage{
 
   data_cleaning(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda",
@@ -23,8 +23,5 @@ A compound list of datasets
 }
 \description{
 A data cleaning process needed to create data to be used in SVAMP
-}
-\details{
-Data cleaning of data for use with SVAMP
 }
 

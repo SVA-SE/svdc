@@ -17,6 +17,6 @@ Imports:
 Depends:
     R(>= 3.0.0)
 Collate:
+    'fix_encoding.R'
     'svdc.R'
     'datasets.R'
-    'fix_encoding.R'
