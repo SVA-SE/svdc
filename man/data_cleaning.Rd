@@ -9,14 +9,17 @@
   package = "svdc"), ppn_dataset = system.file("extdata/ppn_sample.csv",
   package = "svdc"),
   movements_dataset = system.file("extdata/ani_move_sample.csv", package =
-  "svdc"))
+  "svdc"), svala_dataset = system.file("extdata/svala.data_sample.rda",
+  package = "svdc"))
 }
 \arguments{
-\item{svasss_dataset}{path of dataset of svass report}
+\item{svasss_dataset}{Path to dataset of SVASSS data}
 
-\item{ppn_dataset}{Path of dataset of farm ppns}
+\item{ppn_dataset}{Path to dataset of farm ppns}
 
-\item{movements_dataset}{path of animal movement dataset}
+\item{movements_dataset}{Path to animal movement dataset}
+
+\item{svala_dataset}{Path to SVALA dataset}
 }
 \value{
 A compound list of datasets

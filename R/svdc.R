@@ -118,9 +118,9 @@ load_movement_data <- function(filename)
     ani_move <- ani_move[,c(5,6,8,7)]
     names(ani_move) <- c('source', 'destination', 'Type', 't')
 
-    ## We are only interested in movement dataset last 100 days
+    ## We are only interested in movement dataset last 365 days
     ani_move$t <- as.Date(ani_move$t)
-    ani_move <- ani_move[ani_move$t > Sys.Date() - 100,]
+    ani_move <- ani_move[ani_move$t > Sys.Date() - 365,]
 
     ani_move2 <- subset(ani_move, subset = Type == 2 | Type == 4)
     ani_move3 <- subset(ani_move, subset = Type == 1 | Type == 5)
@@ -133,12 +133,78 @@ load_movement_data <- function(filename)
     return(ani_move)
 }
 
+
+#' Read in the PPN data from jordbruksverket
+#' 
+#' Change all projected coordinated from sweref99 to RT90
+#' @param df dataset of PPNs
+#' @return a dataframe of the PPNs
+#' @import data.table
+#' @import sp
+#' @import rgdal
+#' @keywords internal
+
+rt90_sweref99 <- function(df) 
+{
+  
+  ##Change all projected coordinated from sweref99 to RT90. The
+  ##coordinate systems do not overlap. All those points with a
+  ##Y-coordinate (the horizontal axis) of less than 1083427.290 are
+  ##sweref99 and should be reprojected to RT90. The other points are
+  ##already in RT90. The reason for the choice of RT90 is that the
+  ##polygon data that I have for Sweden is in RT90. 
+  
+  colnames(df)[colnames(df) == "Y"] <- "X.1"
+  colnames(df)[colnames(df) == "X"] <- "Y"
+  colnames(df)[colnames(df) == "X.1"] <- "X"
+  
+  if (length(df$Y[df$Y < 1083427.2970 & !is.na(df$Y) & !is.na(df$X)]) == 0) {return(df); break}
+    
+  points_sweref99 <- SpatialPoints(cbind(df$Y[df$Y < 1083427.2970 & !is.na(df$Y) & !is.na(df$X)],
+                                         df$X[df$Y < 1083427.2970 & !is.na(df$Y) & !is.na(df$X)]))
+  ##
+  proj4string(points_sweref99) <- "+init=epsg:3006 +proj=utm +zone=33 +ellps=GRS80
+  +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"
+  
+  points_RT90 <- SpatialPoints(cbind(df$Y[df$Y >= 1083427.2970 & !is.na(df$Y) & !is.na(df$X)],
+                                     df$X[df$Y >= 1083427.2970 & !is.na(df$Y) & !is.na(df$X)]))
+  
+  proj4string(points_RT90) <- "+init=epsg:3021 +proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0
+                                 +ellps=bessel +towgs84=414.1,41.3,603.1,-0.855,2.141,-7.023,0 +units=m +no_defs"
+  
+  points_RT90_2<- spTransform(points_sweref99, "+init=epsg:3021 +proj=tmerc +lat_0=0 +lon_0=15.80827777777778 +k=1 +x_0=1500000 +y_0=0
+                                                  +ellps=bessel +towgs84=414.1,41.3,603.1,-0.855,2.141,-7.023,0 +units=m +no_defs")
+  
+  
+  df$X1[df$Y<1083427.2970 & !is.na(df$Y) & !is.na(df$X)] <- points_RT90_2@coords[,"coords.x2"]
+  df$Y1[df$Y<1083427.2970 & !is.na(df$Y) & !is.na(df$X)] <- points_RT90_2@coords[,"coords.x1"]
+  
+  df$X2[df$Y>=1083427.2970 & !is.na(df$Y) & !is.na(df$X)] <- points_RT90@coords[,"coords.x2"]
+  df$Y2[df$Y>=1083427.2970 & !is.na(df$Y) & !is.na(df$X)] <- points_RT90@coords[,"coords.x1"]
+  
+  df$X <- df$X1
+  df$X[is.na(df$X)] <- df$X2[is.na(df$X)]
+  
+  df$Y <- df$Y1
+  df$Y[is.na(df$Y)] <- df$Y2[is.na(df$Y)]
+  
+  df <- subset(df, select = -c(X1, Y1, X2, Y2))
+  
+  colnames(df)[colnames(df) == "Y"] <- "X.1"
+  colnames(df)[colnames(df) == "X"] <- "Y"
+  colnames(df)[colnames(df) == "X.1"] <- "X"
+  
+  return(df)
+}
+
+
 #' Data cleaning of data for use with SVAMP
 #'
 #' A data cleaning process needed to create data to be used in SVAMP
-#' @param svasss_dataset path of dataset of svass report
-#' @param ppn_dataset Path of dataset of farm ppns
-#' @param movements_dataset path of animal movement dataset
+#' @param svasss_dataset Path to dataset of SVASSS data
+#' @param ppn_dataset Path to dataset of farm ppns
+#' @param movements_dataset Path to animal movement dataset
+#' @param svala_dataset Path to SVALA dataset 
 #' @return A compound list of datasets
 #' @export
 #' @include fix_encoding.R
@@ -146,19 +212,24 @@ load_movement_data <- function(filename)
 #' @import rgdal
 data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                           ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
-                          movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"))
+                          movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"),
+                          svala_dataset = system.file("extdata/svala.data_sample.rda", package = "svdc"))
 {
   # Check arguments
   svasss_dataset <- check_file_argument(svasss_dataset)
   ppn_dataset <- check_file_argument(ppn_dataset)
   movements_dataset <- check_file_argument(movements_dataset)
-
+  svala_dataset <- check_file_argument(svala_dataset)
+  
   # NOTE: data have been already converted from ETRS89 to RT90
   data(NUTS_03M, package = "svdc", envir = environment())
   data(postnummer, package = "svdc", envir = environment())
 
   # SVASSS data
   load(file = svasss_dataset)
+  
+  # SVALA data
+  load(file = svala_dataset)
 
   # URAX data. Those are toy data. As soon as we'll have true urax data change the path
   # urax <- read.csv("C:/project/R/proj/gis/data/URAX/prover.csv", sep=";",
@@ -170,6 +241,8 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   SVASSS.SJV.alarms.data <- fix_enc(SVASSS.SJV.alarms.data)
 
   PPN <- load_ppn_data(ppn_dataset)
+  PPN <- rt90_sweref99(PPN)
+  
   ani_move <- load_movement_data(movements_dataset)
 
   # PPN with (PPN_is.na) and without missing coordinates (PPN_xy)
@@ -195,10 +268,10 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   ## Veterinary disctrict dataset
   data(district_geo_RT90, package = "svdc", envir = environment())
 
-  #Labels for Län of static outbreak map
+  # Labels for Län of static outbreak map
   data(nuts_label, package = "svdc", envir = environment())
 
-  #List of PPN, X and Y not duplicated
+  # List of PPN, X and Y not duplicated
   ppnlist <- PPN[c("Ppn","X","Y","Kommun", "Adress", "Postnummer", "Postadress")]
   ppnlist <- ppnlist[!duplicated(ppnlist$Ppn),]
 
@@ -215,10 +288,17 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
                  SVASSS.alarms.data = SVASSS.alarms.data,
                  SVASSS.SJV.alarms.data = SVASSS.SJV.alarms.data,
                  SVASSS.CDB.alarms.data = SVASSS.CDB.alarms.data,
+                 svala.data = svala.data,
                  ppnlist = ppnlist)
 
   return(result)
 }
 
-# result <- data_cleaning()
-# save(result, file = "C:/svamp/svamp/inst/extdata/result.rda")
+# result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
+# movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
+# svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData")
+# 
+# save(result, file = "//UBUNTU1/share/result.rda")
+
+
+
