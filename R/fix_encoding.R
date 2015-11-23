@@ -1,6 +1,6 @@
 ##' @title Convert the encoding of a dataframe from latin-1 to UTF-8
 ##' @description A method for changing the encoding of a dataframe to UTF-8
-##' @param df
+##' @param df A dataframe
 ##' @return A dataframe
 ##' @author Thomas Rosendal
 

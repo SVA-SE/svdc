@@ -6,6 +6,9 @@
 \usage{
 fix_enc(df)
 }
+\arguments{
+\item{df}{A dataframe}
+}
 \value{
 A dataframe
 }
