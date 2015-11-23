@@ -19,7 +19,9 @@ check_file_argument <- function(filename)
 #' @keywords internal
 load_ppn_data <- function(filename)
 {
-    PPN <- read.csv(file = filename, sep=";", header=T, stringsAsFactors = FALSE, dec=",")
+    PPN <- read.csv(file = filename, sep=";", header=T, stringsAsFactors = FALSE, dec=",",
+                    encoding = "UTF-8")
+    
     if(!(length(names(PPN)) == 41)){
         stop("The number of columns in the PPN dataset should be 41")
     }
@@ -34,6 +36,7 @@ load_ppn_data <- function(filename)
     ## this check fails if the data structure change.
     ppn_sample <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"),
                             stringsAsFactors=FALSE)
+    
     if(!identical(names(ppn_sample), names(PPN))) {
         stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
     }
@@ -139,7 +142,6 @@ load_movement_data <- function(filename)
 #' Change all projected coordinated from sweref99 to RT90
 #' @param df dataset of PPNs
 #' @return a dataframe of the PPNs
-#' @import data.table
 #' @import sp
 #' @import rgdal
 #' @keywords internal
@@ -213,13 +215,18 @@ rt90_sweref99 <- function(df)
 data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.data_sample.rda", package = "svdc"),
                           ppn_dataset =  system.file("extdata/ppn_sample.csv", package = "svdc"),
                           movements_dataset = system.file("extdata/ani_move_sample.csv", package = "svdc"),
-                          svala_dataset = system.file("extdata/svala.data_sample.rda", package = "svdc"))
+                          svala_dataset = system.file("extdata/svala.data_sample.rda", package = "svdc"),
+                          sjv_dataset = system.file("extdata/sjv.data_sample.rda", package = "svdc"),
+                          urax_dataset = system.file("extdata/urax_sample.csv", package = "svdc"))
 {
   # Check arguments
   svasss_dataset <- check_file_argument(svasss_dataset)
   ppn_dataset <- check_file_argument(ppn_dataset)
   movements_dataset <- check_file_argument(movements_dataset)
   svala_dataset <- check_file_argument(svala_dataset)
+  sjv_dataset <- check_file_argument(sjv_dataset)
+  urax_dataset <- check_file_argument(urax_dataset)
+  
   
   # NOTE: data have been already converted from ETRS89 to RT90
   data(NUTS_03M, package = "svdc", envir = environment())
@@ -231,9 +238,12 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   # SVALA data
   load(file = svala_dataset)
 
-  # URAX data. Those are toy data. As soon as we'll have true urax data change the path
-  # urax <- read.csv("C:/project/R/proj/gis/data/URAX/prover.csv", sep=";",
-  #                  header=T, stringsAsFactors = FALSE, dec=",", encoding='latin1')
+  # SJV data
+  load(file = sjv_dataset)
+  
+  # URAX data.
+  urax <- read.csv2 ("//UBUNTU1/share/urax.csv", header=T, stringsAsFactors = FALSE,
+                     encoding = "UTF-8")
 
   # Encoding of SVASSS data
   SVASSS.alarms.data <- fix_enc(SVASSS.alarms.data)
@@ -259,7 +269,6 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   postnum_miss <- spTransform(postnum_miss, CRS("+init=epsg:3021"))
   postnum_not_miss <-spTransform(postnum_not_miss, CRS("+init=epsg:3021"))
   
-  
   # PPN not duplicated
   farms_RT90 <- subset(PPN_xy, !duplicated(PPN_xy$Ppn))
   coordinates(farms_RT90) <- c("X","Y")
@@ -267,7 +276,7 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
 
   ## Veterinary disctrict dataset
   data(district_geo_RT90, package = "svdc", envir = environment())
-
+  
   # Labels for Län of static outbreak map
   data(nuts_label, package = "svdc", envir = environment())
 
@@ -275,7 +284,7 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   ppnlist <- PPN[c("Ppn","X","Y","Kommun", "Adress", "Postnummer", "Postadress")]
   ppnlist <- ppnlist[!duplicated(ppnlist$Ppn),]
 
-  #Save file
+  # Save file
 
   result <- list(PPN = PPN,
                  farms_RT90 = farms_RT90,
@@ -288,17 +297,20 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
                  SVASSS.alarms.data = SVASSS.alarms.data,
                  SVASSS.SJV.alarms.data = SVASSS.SJV.alarms.data,
                  SVASSS.CDB.alarms.data = SVASSS.CDB.alarms.data,
-                 svala.data = svala.data,
+                 sjv.data = sjv.data,
+                 urax = urax,
                  ppnlist = ppnlist)
 
   return(result)
 }
 
-# result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
-# movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
-# svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData")
+result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
+movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
+svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData",
+sjv_dataset = "//UBUNTU1/share/sjv.data.RData", 
+urax_dataset = "//UBUNTU1/share/urax.csv")
 # 
-# save(result, file = "//UBUNTU1/share/result.rda")
+save(result, file = "//UBUNTU1/share/result.rda")
 
 
 

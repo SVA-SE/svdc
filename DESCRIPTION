@@ -3,7 +3,7 @@ Title: SVAMP data cleaning
 Version: 0.1
 Date: 2015-08-25
 Author: Giampaolo Cocca, Thomas Rosendal
-Maintainer: Giampaolo Cocca <giampaulo.cocca@sva.se>
+Maintainer: Giampaolo Cocca <giampaolo.cocca@sva.se>
 Description: svdc (svamp data cleaning) is a package that cleans data
     from the SVA oracle database in a way that makes it the
     correct input data to the subsequent mapping
@@ -20,3 +20,4 @@ Collate:
     'fix_encoding.R'
     'svdc.R'
     'datasets.R'
+RoxygenNote: 5.0.1
