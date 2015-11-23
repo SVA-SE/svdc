@@ -304,13 +304,13 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
   return(result)
 }
 
-result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
-movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
-svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData",
-sjv_dataset = "//UBUNTU1/share/sjv.data.RData", 
-urax_dataset = "//UBUNTU1/share/urax.csv")
-# 
-save(result, file = "//UBUNTU1/share/result.rda")
+## result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
+## movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
+## svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData",
+## sjv_dataset = "//UBUNTU1/share/sjv.data.RData", 
+## urax_dataset = "//UBUNTU1/share/urax.csv")
+## # 
+## save(result, file = "//UBUNTU1/share/result.rda")
 
 
 
