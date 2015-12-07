@@ -35,8 +35,9 @@ load_ppn_data <- function(filename)
     ## names in the sample data and real data to be identical. NOTE: that
     ## this check fails if the data structure change.
     ppn_sample <- read.csv2(system.file("extdata/ppn_sample.csv", package = "svdc"),
-                            stringsAsFactors=FALSE)
+                            stringsAsFactors=FALSE, encoding = "UTF-8")
     
+        
     if(!identical(names(ppn_sample), names(PPN))) {
         stop("The columns names in the PPN dataset do not match the ordinary PPN columns names")
     }
@@ -107,7 +108,7 @@ load_movement_data <- function(filename)
     ## (Thomas Rosendal code)
     ani_move <- read.csv2(filename, as.is=TRUE)
     ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"),
-                                 stringsAsFactors=FALSE)
+                                 stringsAsFactors=FALSE, encoding = "UTF-8")
 
     if(!identical(names(ani_move_sample), names(ani_move))) {
         stop("The columns names in the movements dataset do not match the ordinary movements columns names")
@@ -276,7 +277,6 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
 
   ## Veterinary disctrict dataset
   data(district_geo_RT90, package = "svdc", envir = environment())
-  Encoding(district_geo_RT90) <- "latin1"
   
   # Labels for Län of static outbreak map
   data(nuts_label, package = "svdc", envir = environment())
