@@ -106,7 +106,7 @@ load_movement_data <- function(filename)
 {
     ## Import movement dataset and format according to EpiContactTrace
     ## (Thomas Rosendal code)
-    ani_move <- read.csv2(filename, as.is=TRUE)
+    ani_move <- read.csv2(filename, as.is=TRUE, encoding = "UTF-8")
     ani_move_sample <- read.csv2(system.file("extdata/ani_move_sample.csv", package = "svdc"),
                                  stringsAsFactors=FALSE, encoding = "UTF-8")
 
@@ -304,11 +304,3 @@ data_cleaning <- function(svasss_dataset = system.file("extdata/SVASSS.alarms.da
 
   return(result)
 }
-
-# result <- data_cleaning(ppn_dataset = "//UBUNTU1/share/PPN_records.csv",
-# movements_dataset = "//UBUNTU1/share/Notforflyttningar.csv",
-# svasss_dataset = "//UBUNTU1/share/SVASSS.alarms.data.RData",
-# sjv_dataset = "//UBUNTU1/share/sjv.data.RData", 
-# urax_dataset = "//UBUNTU1/share/urax.csv")
-# # 
-# save(result, file = "//UBUNTU1/share/result.rda")
