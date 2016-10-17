@@ -1,3 +1,5 @@
+Currently this package is broken because sample data has been removed. It is awaiting maintenance. 
+
 # Package svdc
 
 SVAMP data cleaning (svdc) is a package that cleans data from the SVA
